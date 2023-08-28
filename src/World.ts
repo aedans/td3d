@@ -1,12 +1,11 @@
 import { createNoise2D } from "simplex-noise";
-import Player from "./Player";
 
 export default class World {
   static noise = createNoise2D();
 
   public static noiseSize = 64;
   public static chunkHeight = 16;
-  public static chunkSize = 128;
+  public static chunkSize = 256;
   public static pixelSize = 16;
 
   constructor() {}

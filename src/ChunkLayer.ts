@@ -1,29 +1,25 @@
-import { Texture } from "pixi.js";
-import { Tilemap } from "@pixi/tilemap";
+import { Container, FORMATS, Sprite, Texture } from "pixi.js";
 import World from "./World";
 
-export default class ChunkLayer extends Tilemap {
+export default class ChunkLayer extends Container {
   constructor(
     public chunkX: number,
     public chunkY: number,
     public layerZ: number
   ) {
-    super(Texture.WHITE.baseTexture);
+    super();
     this.x = this.chunkX * World.chunkSize * World.pixelSize;
     this.y = this.chunkY * World.chunkSize * World.pixelSize;
   }
 
   async generateChunkLayer(world: World) {
-    let num = 0;
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
-    for (let x = 0; x < World.chunkSize; x++) {
-      for (let y = 0; y < World.chunkSize; y++) {
-        num++;
-        if (num > 1024) {
-          await new Promise((resolve) => setTimeout(resolve, 0));
-          num = 0;
-        }
+    const buffer = new Uint8Array(World.chunkSize * World.chunkSize * 4);
+    let index = 0;
 
+    for (let y = 0; y < World.chunkSize; y++) {
+      for (let x = 0; x < World.chunkSize; x++) {
         if (
           world.getTile(
             this.chunkX * World.chunkSize + x,
@@ -31,11 +27,28 @@ export default class ChunkLayer extends Tilemap {
             this.layerZ
           )
         ) {
-          this.tile(0, x * World.pixelSize, y * World.pixelSize);
+          buffer[index] = 0;
+          buffer[index + 1] = 0;
+          buffer[index + 2] = 255;
+          buffer[index + 3] = 255;
         }
+
+        index += 4;
       }
     }
 
-    this.cacheAsBitmap = true;
+    const texture = Texture.fromBuffer(
+      buffer,
+      World.chunkSize,
+      World.chunkSize,
+      {
+        format: FORMATS.RGBA,
+      }
+    );
+
+    const sprite = new Sprite(texture);
+    sprite.scale.set(World.pixelSize);
+
+    this.addChild(sprite);
   }
 }

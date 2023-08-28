@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@pixi/tilemap": "^4.0.0",
     "pixi-stats": "^1.2.2",
     "pixi.js": "^7.2.4",
     "simplex-noise": "^4.0.1"

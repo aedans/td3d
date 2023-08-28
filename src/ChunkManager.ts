@@ -11,7 +11,7 @@ export default class ChunkManager {
     for (let z = 0; z < World.chunkHeight; z++) {
       const container = new Container();
       const filter = new ColorMatrixFilter();
-      filter.tint(16 * z);
+      filter.brightness(z / World.chunkHeight, false);
       container.filters = [filter];
       this.containers.push(container);
     }
@@ -65,10 +65,10 @@ export default class ChunkManager {
     }
 
     generating.sort((a, b) => {
-      const aX = Math.abs((a.chunkX + 0.5) - x);
-      const aY = Math.abs((a.chunkY + 0.5) - y);
-      const bX = Math.abs((b.chunkX + 0.5) - x);
-      const bY = Math.abs((b.chunkY + 0.5) - y);
+      const aX = Math.abs(a.chunkX + 0.5 - x);
+      const aY = Math.abs(a.chunkY + 0.5 - y);
+      const bX = Math.abs(b.chunkX + 0.5 - x);
+      const bY = Math.abs(b.chunkY + 0.5 - y);
       return Math.sqrt(aX * aX + aY * aY) - Math.sqrt(bX * bX + bY * bY);
     });
 
@@ -102,7 +102,7 @@ export default class ChunkManager {
 
     for (const key of this.chunks.keys()) {
       const [x, y] = key.split(",").map((x) => Number(x));
-      if (x < minX || x > maxX || y < minY || y >= maxY) {
+      if (x < minX - 1 || x > maxX + 1 || y < minY - 1 || y >= maxY + 1) {
         this.destroyChunk(x, y);
       }
     }

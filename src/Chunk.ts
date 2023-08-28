@@ -16,16 +16,18 @@ export default class Chunk {
   }
 
   async generateChunk(world: World) {
-    for (const layer of this.chunkLayers) {
-      await layer.generateChunkLayer(world);
-    }
+    if (!this.generated) {
+      for (const layer of this.chunkLayers) {
+        await layer.generateChunkLayer(world);
+      }
 
-    this.generated = true;
+      this.generated = true;
+    }
   }
 
   destroyChunk() {
     for (const layer of this.chunkLayers) {
-      layer.destroy();
+      layer.destroy({ children: true, texture: true, baseTexture: true })
     }
   }
 }
