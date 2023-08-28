@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+    }
+ 
+    div#stats {
+      position: fixed;
+      top: 0;
+      right: 0;
+      z-index: 500;
+      width: max(200px, 10vw, 10vh);
+      height: max(100px, 6vh, 6vw);
+      opacity: 0.8;
+      user-select: none;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="src/index.ts" type="module"></script>
+</body>
+
+</html>

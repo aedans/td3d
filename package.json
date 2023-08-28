@@ -1,0 +1,19 @@
+{
+  "name": "top-down-threed",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "vite"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pixi-stats": "^1.2.2",
+    "pixi.js": "^7.2.4",
+    "simplex-noise": "^4.0.1"
+  },
+  "devDependencies": {
+    "vite": "^4.4.5"
+  }
+}
