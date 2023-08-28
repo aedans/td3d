@@ -1,14 +1,14 @@
 import { Texture } from "pixi.js";
-import { createNoise3D } from "simplex-noise";
-import Chunk from "./Chunk";
+import { createNoise2D } from "simplex-noise";
 import { Tilemap } from "@pixi/tilemap";
+import Chunk from "./Chunk";
 
 export default class ChunkLayer extends Tilemap {
-  static noise = createNoise3D();
+  static noise = createNoise2D();
 
   static chunkSize = 128;
   static pixelSize = 16;
-  static noiseSize = 16;
+  static noiseSize = 64;
 
   constructor(
     public chunkX: number,
@@ -21,13 +21,11 @@ export default class ChunkLayer extends Tilemap {
   }
 
   noise(x: number, y: number, z: number) {
-    return (
-      ChunkLayer.noise(
-        (this.chunkX * ChunkLayer.chunkSize + x) / ChunkLayer.noiseSize,
-        (this.chunkY * ChunkLayer.chunkSize + y) / ChunkLayer.noiseSize,
-        z / ChunkLayer.noiseSize
-      ) + 1
-    );
+    const height = (ChunkLayer.noise(
+      (this.chunkX * ChunkLayer.chunkSize + x) / ChunkLayer.noiseSize,
+      (this.chunkY * ChunkLayer.chunkSize + y) / ChunkLayer.noiseSize
+    ) + 1) / 2;
+    return height * Chunk.chunkHeight > z;
   }
 
   async generateChunkLayer() {
@@ -41,9 +39,7 @@ export default class ChunkLayer extends Tilemap {
           num = 0;
         }
 
-        const value = this.noise(x, y, this.layerZ);
-
-        if (value > this.layerZ / Chunk.chunkHeight) {
+        if (this.noise(x, y, this.layerZ)) {
           this.tile(0, x * ChunkLayer.pixelSize, y * ChunkLayer.pixelSize);
         }
       }
