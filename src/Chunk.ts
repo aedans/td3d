@@ -1,13 +1,13 @@
 import ChunkLayer from "./ChunkLayer";
 
 export default class Chunk {
-  public static chunkSize = 16;
+  public static chunkHeight = 16;
 
   chunkLayers: ChunkLayer[] = [];
   generated: boolean = false;
 
   constructor(public chunkX: number, public chunkY: number) {
-    for (let z = 0; z < Chunk.chunkSize; z++) {
+    for (let z = 0; z < Chunk.chunkHeight; z++) {
       this.chunkLayers.push(new ChunkLayer(chunkX, chunkY, z));
     }
   }

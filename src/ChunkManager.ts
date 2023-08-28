@@ -7,7 +7,7 @@ export default class ChunkManager {
   containers: Container[] = [];
 
   constructor() {
-    for (let z = 0; z < Chunk.chunkSize; z++) {
+    for (let z = 0; z < Chunk.chunkHeight; z++) {
       const container = new Container();
       const scale = 1 + z / 32;
       container.scale.set(scale, scale);
@@ -31,7 +31,7 @@ export default class ChunkManager {
     const newChunk = new Chunk(chunkX, chunkY);
     this.chunks.set(key, newChunk);
 
-    for (let i = 0; i < Chunk.chunkSize; i++) {
+    for (let i = 0; i < Chunk.chunkHeight; i++) {
       this.containers[i].addChild(newChunk.chunkLayers[i]);
     }
 
@@ -51,7 +51,7 @@ export default class ChunkManager {
 
     this.chunks.delete(key);
 
-    for (let i = 0; i < Chunk.chunkSize; i++) {
+    for (let i = 0; i < Chunk.chunkHeight; i++) {
       this.containers[i].removeChild(chunk.chunkLayers[i]);
     }
 
@@ -59,14 +59,14 @@ export default class ChunkManager {
   }
 
   generateChunk(currentX: number, currentY: number) {
-    const generating = [...this.chunks.values()].filter(x => !x.generated);
-    
+    const generating = [...this.chunks.values()].filter((x) => !x.generated);
+
     if (generating.length == 0) {
       return new Promise((resolve) => setTimeout(resolve, 0));
     }
 
     generating.sort((a, b) => {
-      const size = Chunk.chunkSize * ChunkLayer.pixelSize;
+      const size = ChunkLayer.chunkSize * ChunkLayer.pixelSize;
       const aX = Math.abs((a.chunkX + 0.5) * size - currentX);
       const aY = Math.abs((a.chunkY + 0.5) * size - currentY);
       const bX = Math.abs((b.chunkX + 0.5) * size - currentX);
@@ -78,7 +78,7 @@ export default class ChunkManager {
   }
 
   async onViewportMove(currentX: number, currentY: number) {
-    const factor = Chunk.chunkSize * ChunkLayer.pixelSize;
+    const factor = ChunkLayer.chunkSize * ChunkLayer.pixelSize;
 
     const minX = Math.floor((currentX - window.innerWidth / 2) / factor);
     const maxX = Math.ceil((currentX + window.innerWidth / 2) / factor);
@@ -93,14 +93,14 @@ export default class ChunkManager {
 
     for (const key of this.chunks.keys()) {
       const [x, y] = key.split(",").map((x) => Number(x));
-      if (x <= minX || x >= maxX || y <= minY || y >= maxY) {
+      if (x < minX || x > maxX || y < minY || y >= maxY) {
         this.destroyChunk(x, y);
       }
     }
 
     const chunks = [] as Chunk[];
-    for (let x = minX + 1; x < maxX; x++) {
-      for (let y = minY + 1; y < maxY; y++) {
+    for (let x = minX; x <= maxX; x++) {
+      for (let y = minY; y <= maxY; y++) {
         chunks.push(this.createChunk(x, y));
       }
     }
