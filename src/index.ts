@@ -2,9 +2,9 @@ import { addStats } from "pixi-stats";
 import { UPDATE_PRIORITY } from "pixi.js";
 import App from "./App";
 import Input from "./Input";
-import Viewport from "./Viewport";
 import ChunkManager from "./ChunkManager";
 import World from "./World";
+import Player from "./Player";
 
 const app = new App();
 
@@ -18,19 +18,17 @@ const input = new Input();
 addEventListener("keydown", (e) => input.setKey(e, true));
 addEventListener("keyup", (e) => input.setKey(e, false));
 
-const viewport = new Viewport(input);
-
-app.ticker.add((delta) => viewport.update(delta));
-
 const world = new World();
+
+const player = new Player(input, .5);
+
+app.ticker.add((delta) => player.update(world, delta));
 
 const manager = new ChunkManager(world);
 app.stage.addChild(...manager.containers);
 
-viewport.onViewportMove((currentX, currentY, currentScale) =>
-  manager.onViewportMove(currentX, currentY, currentScale)
-);
+player.onPlayerMove((player) => manager.onPlayerMove(player));
 
 while (true) {
-  await manager.generateChunk(viewport.currentX, viewport.currentY);
+  await manager.generateChunk(player.x / World.chunkSize, player.y / World.chunkSize);
 }

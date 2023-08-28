@@ -1,4 +1,5 @@
 import { createNoise2D } from "simplex-noise";
+import Player from "./Player";
 
 export default class World {
   static noise = createNoise2D();
