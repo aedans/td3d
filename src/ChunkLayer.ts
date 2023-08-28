@@ -13,13 +13,15 @@ export default class ChunkLayer extends Container {
   }
 
   async generateChunkLayer(world: World) {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
     const buffer = new Uint8Array(World.chunkSize * World.chunkSize * 4);
     let index = 0;
 
     for (let y = 0; y < World.chunkSize; y++) {
       for (let x = 0; x < World.chunkSize; x++) {
+        if (index % 1000000 == 0) {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        }
+
         if (
           world.getTile(
             this.chunkX * World.chunkSize + x,

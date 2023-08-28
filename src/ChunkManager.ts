@@ -1,4 +1,4 @@
-import { ColorMatrixFilter, Container } from "pixi.js";
+import { Container } from "pixi.js";
 import Chunk from "./Chunk";
 import World from "./World";
 import Player from "./Player";
@@ -77,13 +77,15 @@ export default class ChunkManager {
   }
 
   getScale(base: number, z: number) {
+    const cameraDistance = 4;
+    const cameraDOF = 4;
     const diff = base - z;
-    return (1 / (-diff + 100)) * 100;
+    return (1 / (-diff + cameraDistance)) * cameraDOF;
   }
 
   onPlayerMove(player: Player) {
     const factor = World.chunkSize * World.pixelSize;
-    const invScale = 1 / this.getScale(0, player.z);
+    const invScale = 1 / this.getScale(0, World.chunkHeight);
 
     const halfWidth = window.innerWidth / 2;
     const halfHeight = window.innerHeight / 2;
@@ -104,6 +106,13 @@ export default class ChunkManager {
 
       container.x = halfWidth + -pixelX * container.scale.x;
       container.y = halfHeight + -pixelY * container.scale.y;
+
+      const cameraBackClip = -4;
+      if (player.z - z < cameraBackClip) {
+        container.visible = false;
+      } else {
+        container.visible = true;
+      }
     }
 
     for (const key of this.chunks.keys()) {
