@@ -8,8 +8,8 @@ export default class ChunkLayer extends Container {
     public layerZ: number
   ) {
     super();
-    this.x = this.chunkX * World.chunkSize * World.pixelSize;
-    this.y = this.chunkY * World.chunkSize * World.pixelSize;
+    this.x = this.chunkX * World.chunkSize;
+    this.y = this.chunkY * World.chunkSize;
   }
 
   async generateChunkLayer(world: World) {
@@ -51,8 +51,6 @@ export default class ChunkLayer extends Container {
     texture.baseTexture.mipmap = MIPMAP_MODES.ON;
 
     const sprite = new Sprite(texture);
-    sprite.scale.set(World.pixelSize);
-
     this.addChild(sprite);
   }
 }

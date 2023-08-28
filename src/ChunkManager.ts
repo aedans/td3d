@@ -78,25 +78,21 @@ export default class ChunkManager {
 
   getScale(base: number, z: number) {
     const cameraDistance = 4;
-    const cameraDOF = 4;
+    const cameraDOF = 64;
     const diff = base - z;
     return (1 / (-diff + cameraDistance)) * cameraDOF;
   }
 
   onPlayerMove(player: Player) {
-    const factor = World.chunkSize * World.pixelSize;
     const invScale = 1 / this.getScale(0, World.chunkHeight);
 
     const halfWidth = window.innerWidth / 2;
     const halfHeight = window.innerHeight / 2;
-    const pixelX = player.x * World.pixelSize;
-    const pixelY = player.y * World.pixelSize;
+    const minX = Math.floor((player.x - halfWidth * invScale) / World.chunkSize);
+    const maxX = Math.ceil((player.x + halfWidth * invScale) / World.chunkSize);
 
-    const minX = Math.floor((pixelX - halfWidth * invScale) / factor);
-    const maxX = Math.ceil((pixelX + halfWidth * invScale) / factor);
-
-    const minY = Math.floor((pixelY - halfHeight * invScale) / factor);
-    const maxY = Math.ceil((pixelY + halfHeight * invScale) / factor);
+    const minY = Math.floor((player.y - halfHeight * invScale) / World.chunkSize);
+    const maxY = Math.ceil((player.y + halfHeight * invScale) / World.chunkSize);
 
     for (let z = 0; z < World.chunkHeight; z++) {
       const container = this.containers[z];
@@ -104,8 +100,8 @@ export default class ChunkManager {
       const relativeScale = this.getScale(z, player.z);
       container.scale.set(relativeScale, relativeScale);
 
-      container.x = halfWidth + -pixelX * container.scale.x;
-      container.y = halfHeight + -pixelY * container.scale.y;
+      container.x = halfWidth + -player.x * container.scale.x;
+      container.y = halfHeight + -player.y * container.scale.y;
 
       const cameraBackClip = -4;
       if (player.z - z < cameraBackClip) {

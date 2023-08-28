@@ -6,7 +6,6 @@ export default class World {
   public static noiseSize = 256;
   public static chunkHeight = 64;
   public static chunkSize = 1024;
-  public static pixelSize = 16;
 
   constructor() {}
 
