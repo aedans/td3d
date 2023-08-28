@@ -61,9 +61,8 @@ export default class ChunkManager {
   generateChunk(currentX: number, currentY: number) {
     const generating = [...this.chunks.values()].filter(x => !x.generated);
     
-    const wait = new Promise((resolve) => setTimeout(resolve, 0));
     if (generating.length == 0) {
-      return wait;
+      return new Promise((resolve) => setTimeout(resolve, 0));
     }
 
     generating.sort((a, b) => {
