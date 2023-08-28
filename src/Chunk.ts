@@ -4,6 +4,7 @@ export default class Chunk {
   public static chunkSize = 16;
 
   chunkLayers: ChunkLayer[] = [];
+  generated: boolean = false;
 
   constructor(public chunkX: number, public chunkY: number) {
     for (let z = 0; z < Chunk.chunkSize; z++) {
@@ -11,10 +12,16 @@ export default class Chunk {
     }
   }
 
+  public static id(chunk: { chunkX: number; chunkY: number }): string {
+    return `${chunk.chunkX},${chunk.chunkY}`;
+  }
+
   async generateChunk() {
     for (const layer of this.chunkLayers) {
       await layer.generateChunkLayer();
     }
+
+    this.generated = true;
   }
 
   destroyChunk() {

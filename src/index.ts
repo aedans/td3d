@@ -22,8 +22,12 @@ const viewport = new Viewport(input);
 app.ticker.add((delta) => viewport.update(delta));
 
 const manager = new ChunkManager();
-app.stage.addChild(...manager.containers)
+app.stage.addChild(...manager.containers);
 
 viewport.onViewportMove((currentX, currentY) =>
   manager.onViewportMove(currentX, currentY)
 );
+
+while (true) {
+  await manager.generateChunk(viewport.currentX, viewport.currentY);
+}

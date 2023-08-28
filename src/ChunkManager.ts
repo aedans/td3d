@@ -4,7 +4,6 @@ import ChunkLayer from "./ChunkLayer";
 
 export default class ChunkManager {
   chunks: Map<string, Chunk> = new Map();
-  generated: Set<string> = new Set();
   containers: Container[] = [];
 
   constructor() {
@@ -23,7 +22,7 @@ export default class ChunkManager {
     chunkX = Math.floor(chunkX);
     chunkY = Math.floor(chunkY);
 
-    const key = `${chunkX},${chunkY}`;
+    const key = Chunk.id({ chunkX, chunkY });
     const chunk = this.chunks.get(key);
     if (chunk) {
       return chunk;
@@ -43,7 +42,7 @@ export default class ChunkManager {
     chunkX = Math.floor(chunkX);
     chunkY = Math.floor(chunkY);
 
-    const key = `${chunkX},${chunkY}`;
+    const key = Chunk.id({ chunkX, chunkY });
     const chunk = this.chunks.get(key);
 
     if (!chunk) {
@@ -57,6 +56,26 @@ export default class ChunkManager {
     }
 
     chunk.destroyChunk();
+  }
+
+  generateChunk(currentX: number, currentY: number) {
+    const generating = [...this.chunks.values()].filter(x => !x.generated);
+    
+    const wait = new Promise((resolve) => setTimeout(resolve, 0));
+    if (generating.length == 0) {
+      return wait;
+    }
+
+    generating.sort((a, b) => {
+      const size = Chunk.chunkSize * ChunkLayer.pixelSize;
+      const aX = Math.abs((a.chunkX + 0.5) * size - currentX);
+      const aY = Math.abs((a.chunkY + 0.5) * size - currentY);
+      const bX = Math.abs((b.chunkX + 0.5) * size - currentX);
+      const bY = Math.abs((b.chunkY + 0.5) * size - currentY);
+      return Math.sqrt(aX * aX + aY * aY) - Math.sqrt(bX * bX + bY * bY);
+    });
+
+    return generating[0].generateChunk();
   }
 
   async onViewportMove(currentX: number, currentY: number) {
@@ -87,25 +106,11 @@ export default class ChunkManager {
       }
     }
 
-    const toGenerate = chunks.filter(
-      (chunk) => !this.generated.has(`${chunk.chunkX},${chunk.chunkY}`)
-    );
-
-    for (const chunk of toGenerate) {
-      this.generated.add(`${chunk.chunkX},${chunk.chunkY}`);
-    }
-
-    toGenerate.sort((a, b) => {
-      const size = Chunk.chunkSize * ChunkLayer.pixelSize;
-      const aX = Math.abs((a.chunkX + 0.5) * size - currentX);
-      const aY = Math.abs((a.chunkY + 0.5) * size - currentY);
-      const bX = Math.abs((b.chunkX + 0.5) * size - currentX);
-      const bY = Math.abs((b.chunkY + 0.5) * size - currentY);
-      return Math.sqrt(aX * aX + aY * aY) - Math.sqrt(bX * bX + bY * bY);
-    });
-
-    for (const chunk of toGenerate) {
-      await chunk.generateChunk();
+    for (const chunk of chunks) {
+      const id = Chunk.id(chunk);
+      if (!this.chunks.has(id)) {
+        this.chunks.set(id, chunk);
+      }
     }
   }
 }

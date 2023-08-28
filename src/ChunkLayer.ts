@@ -30,7 +30,7 @@ export default class ChunkLayer extends Tilemap {
   }
 
   async generateChunkLayer() {
-    await new Promise((resolve) => setTimeout(resolve, 5));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     for (let x = 0; x < Chunk.chunkSize; x++) {
       for (let y = 0; y < Chunk.chunkSize; y++) {
@@ -41,5 +41,7 @@ export default class ChunkLayer extends Tilemap {
         }
       }
     }
+    
+    this.cacheAsBitmap = true;
   }
 }
