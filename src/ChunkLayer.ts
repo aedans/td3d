@@ -1,4 +1,4 @@
-import { Container, FORMATS, Sprite, Texture } from "pixi.js";
+import { Container, FORMATS, MIPMAP_MODES, Sprite, Texture } from "pixi.js";
 import World from "./World";
 
 export default class ChunkLayer extends Container {
@@ -29,7 +29,7 @@ export default class ChunkLayer extends Container {
         ) {
           buffer[index] = 0;
           buffer[index + 1] = 0;
-          buffer[index + 2] = 255;
+          buffer[index + 2] = 255 * (this.layerZ / World.chunkHeight);
           buffer[index + 3] = 255;
         }
 
@@ -45,6 +45,8 @@ export default class ChunkLayer extends Container {
         format: FORMATS.RGBA,
       }
     );
+
+    texture.baseTexture.mipmap = MIPMAP_MODES.ON;
 
     const sprite = new Sprite(texture);
     sprite.scale.set(World.pixelSize);

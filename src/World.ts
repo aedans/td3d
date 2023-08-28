@@ -4,8 +4,8 @@ export default class World {
   static noise = createNoise2D();
 
   public static noiseSize = 64;
-  public static chunkHeight = 16;
-  public static chunkSize = 256;
+  public static chunkHeight = 256;
+  public static chunkSize = 512;
   public static pixelSize = 16;
 
   constructor() {}

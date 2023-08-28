@@ -10,9 +10,6 @@ export default class ChunkManager {
   constructor(public world: World) {
     for (let z = 0; z < World.chunkHeight; z++) {
       const container = new Container();
-      const filter = new ColorMatrixFilter();
-      filter.brightness(z / World.chunkHeight, false);
-      container.filters = [filter];
       this.containers.push(container);
     }
   }
@@ -26,6 +23,8 @@ export default class ChunkManager {
     if (chunk) {
       return chunk;
     }
+
+    console.log(`Creating chunk ${chunkX},${chunkY}`)
 
     const newChunk = new Chunk(chunkX, chunkY);
     this.chunks.set(key, newChunk);
@@ -47,6 +46,8 @@ export default class ChunkManager {
     if (!chunk) {
       return;
     }
+
+    console.log(`Destroying chunk ${chunkX},${chunkY}`)
 
     this.chunks.delete(key);
 
@@ -75,25 +76,30 @@ export default class ChunkManager {
     return generating[0].generateChunk(this.world);
   }
 
+  getScale(base: number, z: number) {
+    const diff = base - z;
+    return (1 / (-diff + 100)) * 100;
+  }
+
   onPlayerMove(player: Player) {
     const factor = World.chunkSize * World.pixelSize;
-    const scale = 1 / (1 - player.z / 32);
+    const invScale = 1 / this.getScale(0, player.z);
 
     const halfWidth = window.innerWidth / 2;
     const halfHeight = window.innerHeight / 2;
     const pixelX = player.x * World.pixelSize;
     const pixelY = player.y * World.pixelSize;
 
-    const minX = Math.floor((pixelX - halfWidth * scale) / factor);
-    const maxX = Math.ceil((pixelX + halfWidth * scale) / factor);
+    const minX = Math.floor((pixelX - halfWidth * invScale) / factor);
+    const maxX = Math.ceil((pixelX + halfWidth * invScale) / factor);
 
-    const minY = Math.floor((pixelY - halfHeight * scale) / factor);
-    const maxY = Math.ceil((pixelY + halfHeight * scale) / factor);
+    const minY = Math.floor((pixelY - halfHeight * invScale) / factor);
+    const maxY = Math.ceil((pixelY + halfHeight * invScale) / factor);
 
     for (let z = 0; z < World.chunkHeight; z++) {
       const container = this.containers[z];
 
-      const relativeScale = 1 + (z - player.z) / 32;
+      const relativeScale = this.getScale(z, player.z);
       container.scale.set(relativeScale, relativeScale);
 
       container.x = halfWidth + -pixelX * container.scale.x;
@@ -102,14 +108,14 @@ export default class ChunkManager {
 
     for (const key of this.chunks.keys()) {
       const [x, y] = key.split(",").map((x) => Number(x));
-      if (x < minX - 1 || x > maxX + 1 || y < minY - 1 || y >= maxY + 1) {
+      if (x < minX || x > maxX || y < minY || y > maxY) {
         this.destroyChunk(x, y);
       }
     }
 
     const chunks = [] as Chunk[];
-    for (let x = minX; x <= maxX; x++) {
-      for (let y = minY; y <= maxY; y++) {
+    for (let x = minX; x < maxX; x++) {
+      for (let y = minY; y < maxY; y++) {
         chunks.push(this.createChunk(x, y));
       }
     }
