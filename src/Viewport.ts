@@ -1,10 +1,11 @@
 import Input from "./Input";
 
-export type ViewportMoveListener = (currentX: number, currentY: number) => void;
+export type ViewportMoveListener = (currentX: number, currentY: number, currentScale: number) => void;
 
 export default class Viewport {
   currentX = 0;
   currentY = 0;
+  currentScale = .5;
 
   viewportMoveListeners: ViewportMoveListener[] = [];
 
@@ -29,7 +30,7 @@ export default class Viewport {
     }
 
     for (const listener of this.viewportMoveListeners) {
-      listener(this.currentX, this.currentY);
+      listener(this.currentX, this.currentY, this.currentScale);
     }
   }
 }

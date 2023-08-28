@@ -27,8 +27,8 @@ const world = new World();
 const manager = new ChunkManager(world);
 app.stage.addChild(...manager.containers);
 
-viewport.onViewportMove((currentX, currentY) =>
-  manager.onViewportMove(currentX, currentY)
+viewport.onViewportMove((currentX, currentY, currentScale) =>
+  manager.onViewportMove(currentX, currentY, currentScale)
 );
 
 while (true) {

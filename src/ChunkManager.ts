@@ -77,16 +77,21 @@ export default class ChunkManager {
     return generating[0].generateChunk(this.world);
   }
 
-  async onViewportMove(currentX: number, currentY: number) {
+  async onViewportMove(currentX: number, currentY: number, currentScale: number) {
     const factor = World.chunkSize * World.pixelSize;
 
-    const minX = Math.floor((currentX - window.innerWidth / 2) / factor);
-    const maxX = Math.ceil((currentX + window.innerWidth / 2) / factor);
+    const minX = Math.floor((currentX - (window.innerWidth / 2) / currentScale) / factor);
+    const maxX = Math.ceil((currentX + (window.innerWidth / 2) / currentScale) / factor);
+    
+    const minY = Math.floor((currentY - (window.innerWidth / 2) / currentScale) / factor);
+    const maxY = Math.ceil((currentY + (window.innerHeight / 2) / currentScale) / factor);
+    
+    for (let z = 0; z < World.chunkHeight; z++) {
+      const container = this.containers[z];
 
-    const minY = Math.floor((currentY - window.innerWidth / 2) / factor);
-    const maxY = Math.ceil((currentY + window.innerHeight / 2) / factor);
+      const scale = (1 + z / 32) * currentScale;
+      container.scale.set(scale, scale);      
 
-    for (const container of this.containers) {
       container.x = window.innerWidth / 2 + -currentX * container.scale.x;
       container.y = window.innerHeight / 2 + -currentY * container.scale.y;
     }
