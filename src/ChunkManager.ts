@@ -1,13 +1,13 @@
 import { ColorMatrixFilter, Container } from "pixi.js";
 import Chunk from "./Chunk";
-import ChunkLayer from "./ChunkLayer";
+import World from "./World";
 
 export default class ChunkManager {
   chunks: Map<string, Chunk> = new Map();
   containers: Container[] = [];
 
-  constructor() {
-    for (let z = 0; z < Chunk.chunkHeight; z++) {
+  constructor(public world: World) {
+    for (let z = 0; z < World.chunkHeight; z++) {
       const container = new Container();
       const scale = 1 + z / 32;
       container.scale.set(scale, scale);
@@ -31,7 +31,7 @@ export default class ChunkManager {
     const newChunk = new Chunk(chunkX, chunkY);
     this.chunks.set(key, newChunk);
 
-    for (let i = 0; i < Chunk.chunkHeight; i++) {
+    for (let i = 0; i < World.chunkHeight; i++) {
       this.containers[i].addChild(newChunk.chunkLayers[i]);
     }
 
@@ -51,7 +51,7 @@ export default class ChunkManager {
 
     this.chunks.delete(key);
 
-    for (let i = 0; i < Chunk.chunkHeight; i++) {
+    for (let i = 0; i < World.chunkHeight; i++) {
       this.containers[i].removeChild(chunk.chunkLayers[i]);
     }
 
@@ -66,7 +66,7 @@ export default class ChunkManager {
     }
 
     generating.sort((a, b) => {
-      const size = ChunkLayer.chunkSize * ChunkLayer.pixelSize;
+      const size = World.chunkSize * World.pixelSize;
       const aX = Math.abs((a.chunkX + 0.5) * size - currentX);
       const aY = Math.abs((a.chunkY + 0.5) * size - currentY);
       const bX = Math.abs((b.chunkX + 0.5) * size - currentX);
@@ -74,11 +74,11 @@ export default class ChunkManager {
       return Math.sqrt(aX * aX + aY * aY) - Math.sqrt(bX * bX + bY * bY);
     });
 
-    return generating[0].generateChunk();
+    return generating[0].generateChunk(this.world);
   }
 
   async onViewportMove(currentX: number, currentY: number) {
-    const factor = ChunkLayer.chunkSize * ChunkLayer.pixelSize;
+    const factor = World.chunkSize * World.pixelSize;
 
     const minX = Math.floor((currentX - window.innerWidth / 2) / factor);
     const maxX = Math.ceil((currentX + window.innerWidth / 2) / factor);

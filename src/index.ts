@@ -4,6 +4,7 @@ import App from "./App";
 import Input from "./Input";
 import Viewport from "./Viewport";
 import ChunkManager from "./ChunkManager";
+import World from "./World";
 
 const app = new App();
 
@@ -21,7 +22,9 @@ const viewport = new Viewport(input);
 
 app.ticker.add((delta) => viewport.update(delta));
 
-const manager = new ChunkManager();
+const world = new World();
+
+const manager = new ChunkManager(world);
 app.stage.addChild(...manager.containers);
 
 viewport.onViewportMove((currentX, currentY) =>
