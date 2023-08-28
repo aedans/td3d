@@ -1,8 +1,9 @@
-import { Container, Sprite, Texture, Ticker } from "pixi.js";
+import { Texture } from "pixi.js";
 import { createNoise3D } from "simplex-noise";
 import Chunk from "./Chunk";
+import { Tilemap } from "@pixi/tilemap";
 
-export default class ChunkLayer extends Container {
+export default class ChunkLayer extends Tilemap {
   static noise = createNoise3D();
 
   static pixelSize = 16;
@@ -13,7 +14,7 @@ export default class ChunkLayer extends Container {
     public chunkY: number,
     public layerZ: number
   ) {
-    super();
+    super(Texture.WHITE.baseTexture);
     this.x = this.chunkX * Chunk.chunkSize * ChunkLayer.pixelSize;
     this.y = this.chunkY * Chunk.chunkSize * ChunkLayer.pixelSize;
   }
@@ -33,18 +34,12 @@ export default class ChunkLayer extends Container {
 
     for (let x = 0; x < Chunk.chunkSize; x++) {
       for (let y = 0; y < Chunk.chunkSize; y++) {
-        const sprite = new Sprite(Texture.WHITE);
         const value = this.noise(x, y, this.layerZ);
 
-        if (value > (this.layerZ / Chunk.chunkSize)) {
-          sprite.x = x * ChunkLayer.pixelSize;
-          sprite.y = y * ChunkLayer.pixelSize;
-          sprite.tint = (this.layerZ / Chunk.chunkSize) * 256 << 8;
-          this.addChild(sprite);
+        if (value > this.layerZ / Chunk.chunkSize) {
+          this.tile(0, x * ChunkLayer.pixelSize, y * ChunkLayer.pixelSize);
         }
       }
     }
-
-    this.cacheAsBitmap = true;
   }
 }

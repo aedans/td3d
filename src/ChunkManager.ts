@@ -1,4 +1,4 @@
-import { Container } from "pixi.js";
+import { ColorMatrixFilter, Container } from "pixi.js";
 import Chunk from "./Chunk";
 import ChunkLayer from "./ChunkLayer";
 
@@ -12,6 +12,9 @@ export default class ChunkManager {
       const container = new Container();
       const scale = 1 + z / 32;
       container.scale.set(scale, scale);
+      const filter = new ColorMatrixFilter();
+      filter.tint(16 * z);
+      container.filters = [filter];
       this.containers.push(container);
     }
   }
